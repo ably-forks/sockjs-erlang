@@ -24,6 +24,8 @@ rand32() ->
 -spec encode_frame(frame()) -> iodata().
 encode_frame({open, nil}) ->
     <<"o">>;
+encode_frame({open, Hostname}) ->
+    [<<"o">>, sockjs_json:encode(#{hostname => Hostname})];
 encode_frame({close, {Code, Reason}}) ->
     [<<"c">>,
      sockjs_json:encode([Code, list_to_binary(Reason)])];

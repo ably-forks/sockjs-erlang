@@ -22,6 +22,8 @@ init_state(Prefix, Callback, State, Options) ->
                  proplists:get_value(websocket, Options, true),
              cookie_needed =
                  proplists:get_value(cookie_needed, Options, false),
+             hostname =
+                 proplists:get_value(hostname, Options, nil),
              disconnect_delay =
                  proplists:get_value(disconnect_delay, Options, 5000),
              heartbeat_delay =

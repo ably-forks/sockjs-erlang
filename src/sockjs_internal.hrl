@@ -11,6 +11,7 @@
                   state            :: any(),
                   sockjs_url       :: nonempty_string(),
                   cookie_needed    :: boolean(),
+                  hostname         :: nil|binary(),
                   websocket        :: boolean(),
                   disconnect_delay :: non_neg_integer(),
                   heartbeat_delay  :: non_neg_integer(),
@@ -25,6 +26,7 @@
 -type(session() :: nonempty_string()).
 
 -type(frame()   :: {open, nil} |
+                   {open, binary()} |
                    {close, {non_neg_integer(), string()}} |
                    {data, list(iodata())} |
                    {heartbeat, nil} ).

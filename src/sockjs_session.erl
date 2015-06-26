@@ -27,6 +27,7 @@
                   heartbeat_delay = 25000      :: non_neg_integer(),
                   ready_state = connecting     :: connecting | open | closed,
                   close_msg                    :: {non_neg_integer(), string()},
+                  hostname                     :: nil | binary(),
                   callback,
                   state,
                   handle                       :: handle()
@@ -185,6 +186,7 @@ emit(What, State = #session{callback = Callback,
 init({SessionId, #service{callback         = Callback,
                           state            = UserState,
                           disconnect_delay = DisconnectDelay,
+                          hostname         = Hostname,
                           heartbeat_delay  = HeartbeatDelay}, Info}) ->
     case SessionId of
         undefined -> ok;
@@ -200,15 +202,17 @@ init({SessionId, #service{callback         = Callback,
                   disconnect_delay = DisconnectDelay,
                   heartbeat_tref   = undefined,
                   heartbeat_delay  = HeartbeatDelay,
+                  hostname         = Hostname,
                   handle           = {?MODULE, {self(), Info}}}}.
 
 
 handle_call({reply, Pid, _Multiple}, _From, State = #session{
                                                response_pid = undefined,
+                                               hostname     = Hostname,
                                                ready_state  = connecting}) ->
     State0 = emit(init, State),
     State1 = unmark_waiting(Pid, State0),
-    {reply, {ok, {open, nil}},
+    {reply, {ok, {open, Hostname}},
      State1#session{ready_state = open}};
 
 handle_call({reply, Pid, Multiple}, _From, State = #session{
