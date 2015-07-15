@@ -290,8 +290,8 @@ handle_info({'$sockjs_session$', heartbeat_triggered}, State = #session{response
     {noreply, State#session{heartbeat_tref = triggered}};
 
 handle_info(Info, State) ->
-    emit({info, Info}, State),
-    {noreply, State}.
+    State1 = emit({info, Info}, State),
+    {noreply, State1}.
 
 
 terminate(_, State = #session{id = SessionId, ready_state = ReadyState}) ->
