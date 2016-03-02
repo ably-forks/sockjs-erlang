@@ -1,7 +1,7 @@
 -module(sockjs_filters).
 
--export([cache_for/2, h_sid/2, h_no_cache/2, xhr_cors/2,
-         xhr_options_post/2, xhr_options_get/2]).
+-export([cache_for/3, h_sid/3, h_no_cache/3, xhr_cors/3,
+         xhr_options_post/3, xhr_options_get/3]).
 
 -include("sockjs_internal.hrl").
 
@@ -9,8 +9,8 @@
 
 %% --------------------------------------------------------------------------
 
--spec cache_for(req(), headers()) -> {headers(), req()}.
-cache_for(Req, Headers) ->
+-spec cache_for(req(), headers(), service()) -> {headers(), req()}.
+cache_for(Req, Headers, _Service) ->
     Expires = calendar:gregorian_seconds_to_datetime(
                 calendar:datetime_to_gregorian_seconds(
                   calendar:now_to_datetime(now())) + ?YEAR),
@@ -18,26 +18,20 @@ cache_for(Req, Headers) ->
          {"Expires",       httpd_util:rfc1123_date(Expires)}],
     {H ++ Headers, Req}.
 
--spec h_sid(req(), headers()) -> {headers(), req()}.
-h_sid(Req, Headers) ->
-    %% Some load balancers do sticky sessions, but only if there is
-    %% a JSESSIONID cookie. If this cookie isn't yet set, we shall
-    %% set it to a dumb value. It doesn't really matter what, as
-    %% session information is usually added by the load balancer.
-    {C, Req2} = sockjs_http:jsessionid(Req),
-    H = case C of
-        undefined -> [{"Set-Cookie", "JSESSIONID=dummy; path=/"}];
-        Jsid      -> [{"Set-Cookie", "JSESSIONID=" ++ Jsid ++ "; path=/"}]
-    end,
-    {H ++ Headers, Req2}.
+-spec h_sid(req(), headers(), service()) -> {headers(), req()}.
+h_sid(Req, Headers, #service{cookie_needed=false}) ->
+    {Headers, Req};
+h_sid(Req, Headers, #service{cookie_needed=true, cookie_name=CookieName, cookie_value=CookieValue}) ->
+    %% For sticky sessions
+    {[{"Set-Cookie", CookieName ++ "=" ++ CookieValue ++ "; HttpOnly"} | Headers], Req}.
 
--spec h_no_cache(req(), headers()) -> {headers(), req()}.
-h_no_cache(Req, Headers) ->
+-spec h_no_cache(req(), headers(), service()) -> {headers(), req()}.
+h_no_cache(Req, Headers, _Service) ->
     H = [{"Cache-Control", "no-store, no-cache, must-revalidate, max-age=0"}],
     {H ++ Headers, Req}.
 
--spec xhr_cors(req(), headers()) -> {headers(), req()}.
-xhr_cors(Req, Headers) ->
+-spec xhr_cors(req(), headers(), service()) -> {headers(), req()}.
+xhr_cors(Req, Headers, _Service) ->
     {OriginH, Req1} = sockjs_http:header('origin', Req),
      Origin = case OriginH of
                   "null"    -> "*";
@@ -54,16 +48,16 @@ xhr_cors(Req, Headers) ->
          {"Access-Control-Allow-Credentials", "true"}],
     {H ++ AllowHeaders ++ Headers, Req2}.
 
--spec xhr_options_post(req(), headers()) -> {headers(), req()}.
-xhr_options_post(Req, Headers) ->
-    xhr_options(Req, Headers, ["OPTIONS", "POST"]).
+-spec xhr_options_post(req(), headers(), service()) -> {headers(), req()}.
+xhr_options_post(Req, Headers, Service) ->
+    xhr_options(Req, Headers, ["OPTIONS", "POST"], Service).
 
--spec xhr_options_get(req(), headers()) -> {headers(), req()}.
-xhr_options_get(Req, Headers) ->
-    xhr_options(Req, Headers, ["OPTIONS", "GET"]).
+-spec xhr_options_get(req(), headers(), service()) -> {headers(), req()}.
+xhr_options_get(Req, Headers, Service) ->
+    xhr_options(Req, Headers, ["OPTIONS", "GET"], Service).
 
--spec xhr_options(req(), headers(), list(string())) -> {headers(), req()}.
-xhr_options(Req, Headers, Methods) ->
+-spec xhr_options(req(), headers(), list(string()), service()) -> {headers(), req()}.
+xhr_options(Req, Headers, Methods, _Service) ->
     H = [{"Access-Control-Allow-Methods", string:join(Methods, ", ")},
          {"Access-Control-Max-Age", integer_to_list(?YEAR)}],
     {H ++ Headers, Req}.

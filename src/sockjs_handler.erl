@@ -22,6 +22,10 @@ init_state(Prefix, Callback, State, Options) ->
                  proplists:get_value(websocket, Options, true),
              cookie_needed =
                  proplists:get_value(cookie_needed, Options, false),
+             cookie_name=
+                 proplists:get_value(cookie_name, Options, "JSESSIONID"),
+             cookie_value=
+                 proplists:get_value(cookie_value, Options, "dummy"),
              hostname =
                  proplists:get_value(hostname, Options, nil),
              disconnect_delay =
@@ -184,7 +188,7 @@ handle({bad_method, Methods}, _Service, Req) ->
 handle({match, {Type, Action, _Server, Session, Filters}}, Service, Req) ->
     {Headers, Req2} = lists:foldl(
                         fun (Filter, {Headers0, Req1}) ->
-                                sockjs_filters:Filter(Req1, Headers0)
+                                sockjs_filters:Filter(Req1, Headers0, Service)
                         end, {[], Req}, Filters),
     case Type of
         send ->

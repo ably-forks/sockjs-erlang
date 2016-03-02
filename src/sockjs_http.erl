@@ -1,6 +1,6 @@
 -module(sockjs_http).
 
--export([path/1, method/1, body/1, body_qs/1, header/2, jsessionid/1,
+-export([path/1, method/1, body/1, body_qs/1, header/2, sessionid/1,
          callback/1, peername/1, sockname/1]).
 -export([reply/4, chunk_start/3, chunk/2, chunk_end/1]).
 -export([hook_tcp_close/1, unhook_tcp_close/1, abruptly_kill/1]).
@@ -68,9 +68,10 @@ header(K, {cowboy, Req})->
         _         -> {binary_to_list(V), {cowboy, Req3}}
     end.
 
--spec jsessionid(req()) -> {nonempty_string() | undefined, req()}.
-jsessionid({cowboy, Req}) ->
-    {C, Req2} = cowboy_req:cookie(<<"JSESSIONID">>, Req),
+-spec sessionid(req()) -> {nonempty_string() | undefined, req()}.
+sessionid({cowboy, Req}) ->
+    {ok, SessionCookieName} = application:get_env(session_cookie_name),
+    {C, Req2} = cowboy_req:cookie(list_to_binary(SessionCookieName), Req),
     case C of
         _ when is_binary(C) ->
             {binary_to_list(C), {cowboy, Req2}};

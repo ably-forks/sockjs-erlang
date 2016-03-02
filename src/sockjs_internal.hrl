@@ -11,6 +11,8 @@
                   state            :: any(),
                   sockjs_url       :: nonempty_string(),
                   cookie_needed    :: boolean(),
+                  cookie_name      :: nonempty_string(),
+                  cookie_value     :: nonempty_string(),
                   hostname         :: nil|binary(),
                   websocket        :: boolean(),
                   disconnect_delay :: non_neg_integer(),

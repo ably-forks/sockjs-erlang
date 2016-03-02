@@ -71,9 +71,14 @@ iframe(Req, Headers, #service{sockjs_url = SockjsUrl}) ->
 -spec info_test(req(), headers(), service()) -> req().
 info_test(Req, Headers, #service{websocket = Websocket,
                                  hostname = Hostname,
-                                 cookie_needed = CookieNeeded}) ->
+                                 cookie_needed = CookieNeeded,
+                                 cookie_name = CookieName,
+                                 cookie_value = CookieValue
+                                }) ->
     I = #{websocket => Websocket,
           cookie_needed => CookieNeeded,
+          cookie_name => CookieName,
+          cookie_value => CookieValue,
           hostname => Hostname,
           origins => [<<"*:*">>],
           entropy => sockjs_util:rand32()},

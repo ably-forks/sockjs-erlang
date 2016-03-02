@@ -110,6 +110,10 @@ simple. It has just a couple of methods:
        can be usefull when your loadbalancer doesn't support them.
      * `{cookie_needed, boolean()}` - is your load balancer relying on
        cookies to get sticky sessions working?
+     * `{cookie_name, string()}` - The name of the cookie
+       (defaults to "JSESSIONID")
+     * `{cookie_value, string()}` - The value of the cookie
+       (defaults to "dummy")
      * `{heartbeat_delay, integer()}` - how often to send heartbeat
        packets (in ms).
      * `{disconnect_delay, integer()}` - how long to hold session state
