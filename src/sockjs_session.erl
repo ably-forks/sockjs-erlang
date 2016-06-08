@@ -203,7 +203,26 @@ init({SessionId, #service{callback         = Callback,
                   heartbeat_tref   = undefined,
                   heartbeat_delay  = HeartbeatDelay,
                   hostname         = Hostname,
-                  handle           = {?MODULE, {self(), Info}}}}.
+                  handle           = {?MODULE, {self(), Info}}}};
+
+init(Other) ->
+  case Other of
+    {_, #service{callback         = Callback,
+                          state            = UserState,
+                          disconnect_delay = DisconnectDelay,
+                          hostname         = Hostname,
+                          heartbeat_delay  = HeartbeatDelay}, _} ->
+      erlang:error(matches_what_it_should_be);
+
+    {_, Service = #service{}, _} ->
+      erlang:error({no_submatches_in_service, Service});
+
+    {_, Service, _} ->
+      erlang:error({no_matching_service, Service});
+
+    Other ->
+      erlang:error({no_match, Other})
+  end.
 
 
 handle_call({reply, Pid, _Multiple}, _From, State = #session{
