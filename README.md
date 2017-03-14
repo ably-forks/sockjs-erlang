@@ -59,22 +59,6 @@ Dig into the `examples` directory to get working code:
   * https://github.com/sockjs/sockjs-erlang/examples/cowboy_echo.erl
 
 
-How to run the examples?
-------------------------
-
-You may need a recent version of Erlang/OTP, at least R14B is recommended.
-
-To run Cowboy example:
-
-    cd sockjs-erlang
-    ./rebar get-deps
-    ./rebar compile
-    ./examples/cowboy_echo.erl
-
-This will start a simple `/echo` SockJS server on
-`http://localhost:8081`.  Open this link in a browser and play
-around.
-
 
 SockJS-erlang API
 -----------------
@@ -244,24 +228,7 @@ do take a look at the 'Deployment' section in
 Development and testing
 -----------------------
 
-You need [rebar](https://github.com/basho/rebar)
-([instructions](https://github.com/basho/rebar/wiki/Building-rebar)).
-Due to a bug in rebar config handling you need a reasonably recent
-version - newer than late Oct 2011. Alternatively, SockJS-erlang is
-bundeled with a recent rebar binary.
-
-SockJS-erlang contains a `test_server`, a simple server used for
-testing.
-
-To run Cowboy test_server:
-
-    cd sockjs-erlang
-    ./rebar get-deps
-    ./rebar compile
-    ./examples/cowboy_test_server.erl
-
-That should start test_server on port 8081. Currently, there are two
-separate test suits using test_server.
+Use rebar3.
 
 ### SockJS-protocol Python tests
 
