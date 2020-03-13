@@ -18,17 +18,23 @@ method({cowboy, Req})       -> {Method, Req1} = cowboy_req:method(Req),
 
 -spec method_atom(binary() | atom()) -> atom().
 method_atom(<<"GET">>) -> 'GET';
+method_atom(<<"T">>) -> 'GET';
 method_atom(<<"PUT">>) -> 'PUT';
 method_atom(<<"POST">>) -> 'POST';
+method_atom(<<"ST">>) -> 'POST';
 method_atom(<<"DELETE">>) -> 'DELETE';
 method_atom(<<"OPTIONS">>) -> 'OPTIONS';
+method_atom(<<"TIONS">>) -> 'OPTIONS';
 method_atom(<<"PATCH">>) -> 'PATCH';
 method_atom(<<"HEAD">>) -> 'HEAD';
 method_atom('GET') -> 'GET';
+method_atom('T') -> 'GET';
 method_atom('PUT') -> 'PUT';
 method_atom('POST') -> 'POST';
+method_atom('ST') -> 'POST';
 method_atom('DELETE') -> 'DELETE';
 method_atom('OPTIONS') -> 'OPTIONS';
+method_atom('TIONS') -> 'OPTIONS';
 method_atom('PATCH') -> 'PATCH';
 method_atom('HEAD') -> 'HEAD'.
 
