@@ -201,6 +201,13 @@ reply_loop(Req, SessionId, ResponseLimit, Fmt, Service) ->
                               %% ie: {active, once}.
                               {tcp_closed, _} ->
                                   Req0;
+                             %% We get these sometimes, let's try assuming they're
+                             %% heartbeats of some kind that this version of
+                             %% sockjs just doesn't understand and ignoring them
+                              {tcp, _S, <<"0\r\n\r\n">>} ->
+                                  Req1 = sockjs_http:unhook_tcp_close(Req0),
+                                  reply_loop(Req1, SessionId, ResponseLimit,
+                                             Fmt, Service);
                               %% In Cowboy we may in theory get real
                               %% http requests, this is bad.
                               {tcp, _S, Data} ->
