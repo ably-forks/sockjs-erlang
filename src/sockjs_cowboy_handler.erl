@@ -17,7 +17,7 @@
 
 %% --------------------------------------------------------------------------
 
-init(#{ref := http} = Req, Service) ->
+init(Req, Service) ->
     case sockjs_handler:is_valid_ws(Service, {cowboy, Req}) of
         {true, _Reason} ->
             Service1 = Service#service{disconnect_delay = 5 * 60 * 1000},
