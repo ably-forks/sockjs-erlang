@@ -19,7 +19,7 @@ start_link() ->
 init([]) ->
     {ok,
         {{simple_one_for_one, 10000, 1}, [
-            {undefined, {sockjs_session, start_link, []}, transient, 5000, worker, [sockjs_session]}
+            {undefined, {sockjs_session, start_link, []}, temporary, 5000, worker, [sockjs_session]}
         ]}}.
 
 start_child(SessionId, Service, Info) ->
