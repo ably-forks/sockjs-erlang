@@ -173,24 +173,24 @@ dispatch(Method, Path) ->
 %% --------------------------------------------------------------------------
 
 filters() ->
-    %OptsFilters = [h_sid, xhr_cors, cache_for, xhr_options_post],
+    OptsFilters = [h_sid, xhr_cors, cache_for, xhr_options_post],
     %% websocket does not actually go via handle_req/3 but we need
     %% something in dispatch/2
     [
         {t("/websocket"), [{'GET', none, websocket, []}]},
-        %{t("/xhr_send"),                [{'POST',    recv, xhr_send,       [h_sid, h_no_cache, xhr_cors]},
-        %                                 {'OPTIONS', none, options,        OptsFilters}]},
-        %{t("/xhr"),                     [{'POST',    send, xhr_polling,    [h_sid, h_no_cache, xhr_cors]},
-        %                                 {'OPTIONS', none, options,        OptsFilters}]},
-        %{t("/xhr_streaming"),           [{'POST',    send, xhr_streaming,  [h_sid, h_no_cache, xhr_cors]},
-        %                                 {'OPTIONS', none, options,        OptsFilters}]},
-        %{t("/jsonp_send"),              [{'POST',    recv, jsonp_send,     [h_sid, h_no_cache]}]},
-        %{t("/jsonp"),                   [{'GET',     send, jsonp,          [h_sid, h_no_cache]}]},
-        %{t("/eventsource"),             [{'GET',     send, eventsource,    [h_sid, h_no_cache]}]},
-        %{t("/htmlfile"),                [{'GET',     send, htmlfile,       [h_sid, h_no_cache]}]},
+        {t("/xhr_send"),                [{'POST',    recv, xhr_send,       [h_sid, h_no_cache, xhr_cors]},
+                                         {'OPTIONS', none, options,        OptsFilters}]},
+        {t("/xhr"),                     [{'POST',    send, xhr_polling,    [h_sid, h_no_cache, xhr_cors]},
+                                         {'OPTIONS', none, options,        OptsFilters}]},
+        {t("/xhr_streaming"),           [{'POST',    send, xhr_streaming,  [h_sid, h_no_cache, xhr_cors]},
+                                         {'OPTIONS', none, options,        OptsFilters}]},
+        {t("/jsonp_send"),              [{'POST',    recv, jsonp_send,     [h_sid, h_no_cache]}]},
+        {t("/jsonp"),                   [{'GET',     send, jsonp,          [h_sid, h_no_cache]}]},
+        {t("/eventsource"),             [{'GET',     send, eventsource,    [h_sid, h_no_cache]}]},
+        {t("/htmlfile"),                [{'GET',     send, htmlfile,       [h_sid, h_no_cache]}]},
         {p("/websocket"), [{'GET', none, rawwebsocket, []}]},
         {p(""), [{'GET', none, welcome_screen, []}]},
-        %{p("/iframe[0-9-.a-z_]*.html"), [{'GET',     none, iframe,         [cache_for]}]},
+        {p("/iframe[0-9-.a-z_]*.html"), [{'GET',     none, iframe,         [cache_for]}]},
         {p("/info"), [
             {'GET', none, info_test, [h_no_cache, xhr_cors]},
             {'OPTIONS', none, options, [h_sid, xhr_cors, cache_for, xhr_options_get]}
