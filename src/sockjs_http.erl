@@ -185,21 +185,18 @@ enbinary(L) ->
 
 -spec hook_tcp_close(req()) -> req().
 
-hook_tcp_close(R = {cowboy, Req}) ->
-    [T, S] = cowboy_req:get([transport, socket], Req),
+hook_tcp_close(R = {cowboy, #{transport := T, socket := S}}) ->
     T:setopts(S, [{active, once}]),
     R.
 
 -spec unhook_tcp_close(req()) -> req().
 
-unhook_tcp_close(R = {cowboy, Req}) ->
-    [T, S] = cowboy_req:get([transport, socket], Req),
+unhook_tcp_close(R = {cowboy, #{transport := T, socket := S}}) ->
     T:setopts(S, [{active, false}]),
     R.
 
 -spec abruptly_kill(req()) -> req().
 
-abruptly_kill(R = {cowboy, Req}) ->
-    [T, S] = cowboy_req:get([transport, socket], Req),
+abruptly_kill(R = {cowboy, #{transport := T, socket := S}}) ->
     ok = T:close(S),
     R.
