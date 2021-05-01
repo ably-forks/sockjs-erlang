@@ -114,10 +114,10 @@ header(K, {cowboy, Req}) ->
 -spec callback(req()) -> {nonempty_string() | undefined, req()}.
 
 callback({cowboy, Req}) ->
-    {CB, Req1} = cowboy_req:qs_val(<<"c">>, Req),
-    case CB of
-        undefined -> {undefined, {cowboy, Req1}};
-        _ -> {binary_to_list(CB), {cowboy, Req1}}
+    ParsedQs = cowboy_req:parse_qs(Req),
+    case lists:keyfind(<<"c">>, 1, ParsedQs) of
+        false -> {undefined, {cowboy, Req}};
+        {_, CB} -> {binary_to_list(CB), {cowboy, Req}}
     end.
 
 -spec peername(req()) -> {inet:ip_address(), non_neg_integer()}.
@@ -139,9 +139,9 @@ sockname({cowboy, Req}) -> cowboy_req:sock(Req).
 
 reply(Code, Headers, Body, {cowboy, Req}) ->
     Body1 = iolist_to_binary(Body),
-    {ok, Req1} = cowboy_req:reply(
+    Req1 = cowboy_req:reply(
         Code,
-        enbinary(Headers),
+        maps:from_list(enbinary(Headers)),
         Body1,
         Req
     ),
@@ -154,9 +154,9 @@ reply(Code, Headers, Body, {cowboy, Req}) ->
 ) -> req().
 
 chunk_start(Code, Headers, {cowboy, Req}) ->
-    {ok, Req1} = cowboy_req:chunked_reply(
+    Req1 = cowboy_req:stream_reply(
         Code,
-        enbinary(Headers),
+        maps:from_list(enbinary(Headers)),
         Req
     ),
     {cowboy, Req1}.
@@ -164,7 +164,7 @@ chunk_start(Code, Headers, {cowboy, Req}) ->
 -spec chunk(iodata(), req()) -> {ok | error, req()}.
 
 chunk(Chunk, {cowboy, Req} = R) ->
-    case cowboy_req:chunk(Chunk, Req) of
+    case cowboy_req:stream_body(Chunk, nofin, Req) of
         ok ->
             {ok, R};
         {error, _E} ->
@@ -176,7 +176,9 @@ chunk(Chunk, {cowboy, Req} = R) ->
 
 -spec chunk_end(req()) -> req().
 
-chunk_end({cowboy, _Req} = R) -> R.
+chunk_end({cowboy, Req} = R) ->
+    cowboy_req:stream_body(<<"">>, fin, Req),
+    R.
 
 enbinary(L) ->
     [{list_to_binary(K), list_to_binary(V)} || {K, V} <- L].

@@ -47,17 +47,17 @@ h_no_cache(Req, Headers) ->
 -spec xhr_cors(req(), headers()) -> {headers(), req()}.
 
 xhr_cors(Req, Headers) ->
-    {OriginH, Req1} = sockjs_http:header(origin, Req),
+    OriginH = sockjs_http:header(origin, Req),
     Origin =
         case OriginH of
             "null" -> "*";
             undefined -> "*";
             O -> O
         end,
-    {HeadersH, Req2} =
+    HeadersH =
         sockjs_http:header(
             'access-control-request-headers',
-            Req1
+            Req
         ),
     AllowHeaders =
         case HeadersH of
@@ -68,7 +68,7 @@ xhr_cors(Req, Headers) ->
         {"Access-Control-Allow-Origin", Origin},
         {"Access-Control-Allow-Credentials", "true"}
     ],
-    {H ++ AllowHeaders ++ Headers, Req2}.
+    {H ++ AllowHeaders ++ Headers, Req}.
 
 -spec xhr_options_post(req(), headers()) -> {headers(), req()}.
 
