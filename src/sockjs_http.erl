@@ -61,15 +61,15 @@ method_atom('HEAD') -> 'HEAD'.
 -spec body(req()) -> {binary(), req()}.
 
 body({cowboy, Req}) ->
-    {ok, Body, Req1} = body(Req, <<"">>),
+    {ok, Body, Req1} = body({cowboy, Req}, <<"">>),
     {Body, {cowboy, Req1}}.
 
 body({cowboy, Req}, Acc) ->
     case cowboy_req:read_body(Req) of
-        {ok, Data, Req} ->
-            {ok, <<Acc/binary, Data/binary>>, Req};
-        {more, Data, Req} ->
-            body(Req, <<Acc/binary, Data/binary>>)
+        {ok, Data, Req1} ->
+            {ok, <<Acc/binary, Data/binary>>, Req1};
+        {more, Data, Req1} ->
+            body({cowboy, Req1}, <<Acc/binary, Data/binary>>)
     end.
 
 -spec body_qs(req()) -> {binary(), req()}.
