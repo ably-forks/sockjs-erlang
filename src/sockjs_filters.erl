@@ -32,19 +32,7 @@ cache_for(Req, Headers) ->
 -spec h_sid(req(), headers()) -> {headers(), req()}.
 
 h_sid(Req, Headers) ->
-    %% Some load balancers do sticky sessions, but only if there is
-    %% a JSESSIONID cookie. If this cookie isn't yet set, we shall
-    %% set it to a dumb value. It doesn't really matter what, as
-    %% session information is usually added by the load balancer.
-    C = sockjs_http:jsessionid(Req),
-    H =
-        case C of
-            undefined ->
-                [{"Set-Cookie", "JSESSIONID=dummy; path=/"}];
-            Jsid ->
-                [{"Set-Cookie", "JSESSIONID=" ++ Jsid ++ "; path=/"}]
-        end,
-    H ++ Headers.
+    {Headers, Req}.
 
 -spec h_no_cache(req(), headers()) -> {headers(), req()}.
 

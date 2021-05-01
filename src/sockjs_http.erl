@@ -5,7 +5,6 @@
     body_qs/1,
     callback/1,
     header/2,
-    jsessionid/1,
     method/1,
     path/1,
     peername/1,
@@ -110,21 +109,6 @@ header(K, {cowboy, Req}) ->
     case V of
         undefined -> undefined;
         _ -> binary_to_list(V)
-    end.
-
--spec jsessionid(req()) ->
-    {nonempty_string()
-        | undefined,
-        req()}.
-
-jsessionid({cowboy, Req}) ->
-    #{'JSESSIONID' := C} = cowboy_req:cookie(
-        [{'JSESSIONID', [], undefined}],
-        Req
-    ),
-    case C of
-        _ when is_binary(C) -> {binary_to_list(C), cowboy};
-        undefined -> {undefined, cowboy}
     end.
 
 -spec callback(req()) -> {nonempty_string() | undefined, req()}.
